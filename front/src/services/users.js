@@ -7,10 +7,10 @@ export default{
     create(user){
         return http.post('/users', user)
     },
-    list(token){
-        return http.get('/users', {headers: {"Autorizathion": "Bearer "+ token}} )
+    list(){
+        return http.get('/users')
     },
-    update(user, id, token){
-        return http.put('/users/' + id, user, {headers: {"Autorizathion": "Bearer "+ token}} )
+    update(user, id){
+        return http.put('/users/' + id, user)
     }
 }

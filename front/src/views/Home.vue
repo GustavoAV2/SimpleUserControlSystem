@@ -1,20 +1,12 @@
 <template>
   <div class="home">
-
-    <Navbar/>
-
     <nav class="navbar sticky-top navbar-dark bg-dark">
         <a class="navbar-brand">Admin manager</a>
         <button @click="logout()" class="btn btn-danger">Logout</button>
     </nav>
 
-    <div id="nav">
-      <a @click="setView('users')">Users</a> |
-      <a @click="setView('logs')">Logs</a>
-    </div>
-
     <br>
-    <div class="container" v-if="view == 'users'">
+    <div class="container">
       <table class="table">
         <thead class="thead-dark">
           <tr>
@@ -43,85 +35,73 @@
           </tr>
         </tbody>
       </table>
-
-      <div v-if="message.content" :class="message.type" role="alert">
-        {{message.content}}
-      </div>
     </div>
 
-    <div v-else>
-      <a @click="clearLogs()" v-if="logs.length" class="delete">Clear</a>
-      <div v-for="log in logs" :key="log.index" class="alert alert-success msg" role="alert">
-        {{log.msg}}
-      </div>
-    </div>
+    <a @click="clearLogs()" class="delete">Clear</a>
+    
+    <transition v-for="log in getUserLogs" :key="log.index" name="slide" mode="out-in" appear>
+        <div :class="`alert alert-${log.status}`" role="alert">
+          {{log.msg}}
+        </div>
+        <div v-if="message.content" :class="message.type" role="alert">
+          {{message.content}}
+        </div>
+    </transition>
+
   </div>
 </template>
 
 <script>
-import Navbar from '../components/Navbar'
 import Users from '../services/users'
-import { mapMutations, mapState } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
+import alertMixin from '@/services/alertMixin'
 
 export default {
-  components:{Navbar},
+  mixins:[alertMixin],
   data(){
     return{
       view: 'users',
       users: Array(),
-      message: {content:null, type:null}
     }
-  },
-  
-  computed:{
-    ...mapState({
-      logs: state => state.logs
-    }),
   },
 
   methods:{
-    // Mapeia as mutations da Store
-    ...mapMutations([
-      'setNewLog',
-      'clearLogs'
-    ]),
+    ...mapMutations(['setNewLog', 'clearLogs']),  // Mapeia as mutations da Store
 
     refresh(){
-      Users.list(localStorage.token).then(response => {
+      Users.list().then(response => {
         this.users = response.data
       }).
-      catch(error => {
-        console.log(error)
-        this.message.content = "Couldn't find users!"
-        this.message.type = "alert alert-danger"
+      catch(() => {
+        this.generateMessage("Couldn't find users!", "alert alert-danger")
       })
     },
+
     logout(){
       localStorage.clear()
       this.logged = false
       this.$router.push('/login')
     },
+
     changeState(user){
-      this.setNewLog(user.email, !user.active)
-      console.log(this.logs)
+      this.setNewLog({'email': user.email,'active': !user.active})
       const user_updated = {'active': !user.active}
-      Users.update(user_updated, user.id, localStorage.token).then(() =>{
+      Users.update(user_updated, user.id).then(() =>{
         this.refresh()
       })
     },
-    setView(view){
-      this.view = view
-    }
+  },
+
+  computed:{
+    ...mapGetters(['getUserLogs']), // Mapeia os getters da Store
   },
 
   created(){
-    Users.list(localStorage.token).then(response => {
+    Users.list().then(response => {
       this.users = response.data
     }).
-    catch(error => {
-      console.log(error)
-      this.message.content = "Couldn't find users!"
-      this.message.type = "alert alert-danger"
+    catch(() => {
+      this.generateMessage("Couldn't find users!", "alert alert-danger")
     })
   }
 }
@@ -142,10 +122,6 @@ export default {
   color: white;
   cursor: pointer;
 }
-.bi:hover{
-  color: #5fa8d3;
-  cursor: pointer;
-}
 .active{
   color: green;
   cursor: pointer;
@@ -156,23 +132,39 @@ export default {
   color: #42B983;
 }
 .table{
-  height: 10%;
   text-align: center;
   margin: none;
+  width: 100%; 
+  height: 300px;
   border: black 2px solid;
 }
-.msg{
-  margin-bottom: 0%;
+.alert{
+  margin-bottom: 2px;
+  margin-right: 220px;
+  margin-left: 220px;
 }
-#nav {
-  padding: 30px;
-}
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-#nav a:hover {
-  color: #42b983;
+/* Animação */
+.bi:hover{
+  color: #5fa8d3;
   cursor: pointer;
+}
+@keyframes slide-in{
+  from { transform:  translateY(40px);}
+  to { transform:  translateY(0);}
+}
+@keyframes slide-out{
+  from { transform:  translateY(0);}
+  to { transform:  translateY(40px);}
+} 
+.slide-enter-active{
+  animation: slide-in 2s ease;
+  transition: opacity 2s;
+}
+.slide-leave-active{
+  animation: slide-out 2s ease;
+  transition: opacity 2s;
+}
+.slide-enter, .slide-leave-to {
+  opacity: 0;
 }
 </style>

@@ -14,30 +14,32 @@
             <br>
             
             <button @click="save()" class="btn btn-primary">Save</button>
-            <br><br>
+            <br>
 
-            <div v-if="message.content" :class="message.type" role="alert">
-                {{message.content}}
-            </div>
+            <transition v-if="message.content" name="slide" mode="out-in" appear>
+                <div :class="message.type" role="alert">
+                    {{message.content}}
+                </div>
+            </transition>
         </div>
     </div>
 </template>
 
 <script>
 import User from '../services/users'
+import alertMixin from '../services/alertMixin'
 
 export default {
+    mixins:[alertMixin],
+
     data(){
         return{
             confirm_password: null,
+            loading: false,
             user:{
                 name: null,
                 email: null,
                 password: null
-            },
-            message:{
-                content: null,
-                type: null
             }
         }
     },
@@ -49,18 +51,17 @@ export default {
                     this.user.name = null
                     this.user.email = null
                     this.user.password = null
-                    this.message.content = "Registered successfully!"
-                    this.message.type = "alert alert-success"
+                    this.generateMessage("Registered successfully!", "alert alert-success")
                 }).
-                catch(error =>{
-                    console.log(error.response)
-                    this.message.content = "Registered fail!"
-                    this.message.type = "alert alert-danger"
+                catch(() =>{
+                    this.generateMessage("Registered fail!", "alert alert-danger")
+                }).
+                finally(()=>{
+                    this.loading = false
                 })
             }
             else{
-                this.message.content = "Passwords are not the same!"
-                this.message.type = "alert alert-danger"
+                this.generateMessage("Passwords are not the same!", "alert alert-danger")
             }
         }
     }
@@ -69,17 +70,11 @@ export default {
 
 <style scoped>
 .register{
-    padding-top: 5%;
-    padding-bottom: 5%;
-    margin-top: 10%;
-    margin-right: 20%;
-    margin-left: 20%;
-    box-shadow: 0 0 1em black;
-}
-.container{
+    padding: 40px;
+    padding-bottom: 180px;
+    margin: 200px;
+    margin-top: 50px;
     text-align: center;
-    justify-content: center;
-    border-radius: 1px;
 }
 input {
     background-color: white;
@@ -92,6 +87,15 @@ input {
     border-radius: 1px;
     border-bottom: 2px solid black;
 }
+.alert-danger{
+    margin-right: 150px;
+    margin-left: 150px;
+}
+.btn-primary{
+    margin-bottom: 15px;
+}
+
+/* Animação */
 input:focus {
     transition: 0.3s;
     box-shadow: 0 0 0 0;
@@ -101,10 +105,23 @@ input:focus {
     border-bottom: 2px solid #5fa8d3;
     background-color: white;
 }
-.alert{
-    margin-top: 12%;
-    width: 20%;
-    display: inline;
-    text-align: center;
+@keyframes slide-in{
+  from { transform:  translateY(40px);}
+  to { transform:  translateY(0);}
+}
+@keyframes slide-out{
+  from { transform:  translateY(0);}
+  to { transform:  translateY(40px);}
+} 
+.slide-enter-active{
+  animation: slide-in 2s ease;
+  transition: opacity 2s;
+}
+.slide-leave-active{
+  animation: slide-out 2s ease;
+  transition: opacity 2s;
+}
+.slide-enter, .slide-leave-to {
+  opacity: 0;
 }
 </style>

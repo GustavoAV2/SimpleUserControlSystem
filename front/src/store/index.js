@@ -9,22 +9,26 @@ export default new Vuex.Store({
   },
   
   mutations: {
-    setNewLog(state, email, active){
+    setNewLog(state, payload){
       const log = {
-        'msg': 'User ' + email + ' had his status changed to ' + active, 
+        'msg': 'User ' + payload.email + ' had his status changed to ' + payload.active, 
+        'status': payload.active ? 'success' : 'danger',
         'index': state.logs.length + 1
       }
-      this.state.logs.push(log)
-      console.log(state.logs)
+      if (state.logs.length > 3){
+        state.logs = Array()
+      }
+      state.logs.push(log)
     },
-    clearLogs(){
-      this.state.logs = Array()
+
+    clearLogs(state){
+      state.logs = Array()
     }
   },
 
   getters:{
-    getUserLogs(){
-      return this.state.logs
+    getUserLogs(state){
+      return state.logs
     }
   }
 })
