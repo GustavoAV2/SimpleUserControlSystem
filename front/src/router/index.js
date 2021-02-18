@@ -12,20 +12,45 @@ const routes = [
   {
     // Rota
     path: '/',
-    // Component que sera rendezirado
+    // Componente que sera rendezirado
     component: Home,
     // A rota necessita de autorização para acesso
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
+    // Executar antes de entrar na rota
+    beforeEnter(to, from, next) {
+      http.get('users/me').then(() => {
+          next();
+      }).catch(() => {
+          localStorage.clear()
+          next('/login');
+      });
+    }
   },    
   
   {
     path: '/login',
-    component: Login
+    component: Login,
+    beforeEnter(to, from, next){
+      http.get('users/me').then(() => {
+        next('/');
+      }).catch(() => {
+          localStorage.clear()
+          next();
+      });
+    }
   },  
 
   {
     path: '/register',
-    component: Register
+    component: Register,
+    beforeEnter(to, from, next){
+      http.get('users/me').then(() => {
+        next('/');
+      }).catch(() => {
+          localStorage.clear()
+          next();
+      })
+    }
   },
 ]    
 
@@ -35,65 +60,27 @@ const router = new Router({
 })
 
 
-// Controle sobre a troca de rotas
+// Controle sobre todas as trocas de rotas 
 router.beforeEach((to, from, next) => {
   console.log('from (de)'+ from.path)
   console.log('to (para)'+ to.path)
+  // Next passa para to caso não seja passado outra rota nos parametros
 
   let token = localStorage.getItem('token');
   let requireAuth = to.matched.some(record => record.meta.requiresAuth);
+
   if (!requireAuth) {
-      next();
+    next();
   }
 
   if (requireAuth && !token) {
-      next('/login');
-  }
-  
-  if (to.path === '/') {
-    if (token) {
-        http.get('users/me').then(() => {
-            next();
-        }).catch(() => {
-            localStorage.clear()
-            next('/login');
-        });
-    }
-      else {
-        next();
-      }
+    next('/login');
   }
 
-  if (to.path === '/login') {
-      if (token) {
-          http.get('users/me').then(() => {
-              next('/');
-          }).catch(() => {
-              localStorage.clear()
-              next();
-          });
-      }
-      else {
-        next();
-      }
+  if (requireAuth && token) {
+    next();
   }
   
-  if (to.path === '/register') {
-      if (token) {
-          http.get('users/me').then(() => {
-              next('/');
-          }).catch(() => {
-              console.log('Error')
-              localStorage.clear()
-              next();
-          });
-      }
-      else {
-          console.log('Else')
-          next();
-      }
-  }
-
 });
 
 export default router

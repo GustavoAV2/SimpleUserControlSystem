@@ -33,6 +33,7 @@ def update(user_id) -> Tuple[Any, int]:
 
 
 @app_users.route('/users', methods=['GET'])
+@jwt_required
 def get() -> Tuple[List[Dict], int]:
     return jsonify([user.serialize() for user in get_users()]), 200
 

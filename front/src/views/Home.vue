@@ -25,7 +25,8 @@
           <tr v-for="user in users" :key="user.id">
             <td>{{user.id}}</td>
             <td>{{user.email}}</td>
-            <td>{{user.active}}</td>
+            <td>{{user.active | active}}</td> <!-- Usando filtro  -->
+            
             <div v-if="user.active" class="delete">
               <a @click="changeState(user)" class="delete">Deactivate</a>
             </div>
@@ -39,10 +40,11 @@
 
     <a @click="clearLogs()" class="delete">Clear</a>
     
-    <transition v-for="log in getUserLogs" :key="log.index" name="slide" mode="out-in" appear>
+    <transition v-for="log in getLogs" :key="log.index" name="slide" mode="out-in" appear>
         <div :class="`alert alert-${log.status}`" role="alert">
           {{log.msg}}
         </div>
+
         <div v-if="message.content" :class="message.type" role="alert">
           {{message.content}}
         </div>
@@ -53,20 +55,32 @@
 
 <script>
 import Users from '../services/users'
-import { mapMutations, mapGetters } from 'vuex'
+import { mapMutations, mapGetters, mapActions } from 'vuex'
 import alertMixin from '@/services/alertMixin'
 
 export default {
   mixins:[alertMixin],
+
+  filters:{
+    active(value){
+      return value ? 'True' : 'False'
+    }
+  },
+
   data(){
     return{
       view: 'users',
       users: Array(),
     }
   },
+  
+  computed:{
+    ...mapGetters(['getLogs']), // Mapeia os getters da Store
+  },
 
   methods:{
-    ...mapMutations(['setNewLog', 'clearLogs']),  // Mapeia as mutations da Store
+    ...mapMutations(['clearLogs']),  // Mapeia as mutations da Store
+    ...mapActions(['setNewLog']), // Mapeia as actions da Store
 
     refresh(){
       Users.list().then(response => {
@@ -79,21 +93,15 @@ export default {
 
     logout(){
       localStorage.clear()
-      this.logged = false
       this.$router.push('/login')
     },
 
     changeState(user){
       this.setNewLog({'email': user.email,'active': !user.active})
-      const user_updated = {'active': !user.active}
-      Users.update(user_updated, user.id).then(() =>{
+      Users.update({'active': !user.active}, user.id).then(() =>{
         this.refresh()
       })
     },
-  },
-
-  computed:{
-    ...mapGetters(['getUserLogs']), // Mapeia os getters da Store
   },
 
   created(){
@@ -143,6 +151,7 @@ export default {
   margin-right: 220px;
   margin-left: 220px;
 }
+
 /* Animação */
 .bi:hover{
   color: #5fa8d3;
