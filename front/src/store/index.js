@@ -7,23 +7,19 @@ export default new Vuex.Store({
   state: {
     logs: []
   },
-
   getters:{
     getLogs(state){
       return state.logs
     }
   },
-
   mutations: {
     setNewLog(state, log){
       state.logs.push(log)
     },
-
     clearLogs(state){
       state.logs = Array()
     }
   },
-
   actions:{
     setNewLog(context, payload){
       const log = {

@@ -10,6 +10,11 @@ Vue.use(Router)
 
 const routes = [  
   {
+    path: '*',
+    redirect: '/login'
+  },
+  
+  {
     // Rota
     path: '/',
     // Componente que sera rendezirado
@@ -51,7 +56,7 @@ const routes = [
           next();
       })
     }
-  },
+  }
 ]    
 
 const router = new Router({

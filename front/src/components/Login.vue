@@ -30,7 +30,6 @@ import alertMixin from '../services/alertMixin'
 
 export default {
     mixins:[alertMixin],
-
     data(){
         return{
             loading: false,
@@ -40,12 +39,10 @@ export default {
             }
         }
     },
-    
     methods: {
         loginUser(){
             this.loading = true
             User.login(this.user).then(response => {
-                // localStorage.setItem('token', JSON.stringfy({'token': response.data.access_token}))
                 localStorage.setItem('token', response.data.access_token)
                 this.$router.push('/')
             }).
