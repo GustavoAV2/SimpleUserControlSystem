@@ -9,6 +9,7 @@ import Login from '../views/LoginUser'
 Vue.use(Router)
 
 const routes = [  
+  // Redirecionamento de rotas
   {
     path: '*',
     redirect: '/login'
@@ -24,10 +25,10 @@ const routes = [
     // Executar antes de entrar na rota
     beforeEnter(to, from, next) {
       http.get('users/me').then(() => {
-          next();
+        next();
       }).catch(() => {
-          localStorage.clear()
-          next('/login');
+        localStorage.clear()
+        next('/login');
       });
     }
   },    
@@ -39,8 +40,8 @@ const routes = [
       http.get('users/me').then(() => {
         next('/');
       }).catch(() => {
-          localStorage.clear()
-          next();
+        localStorage.clear()
+        next();
       });
     }
   },  
@@ -52,8 +53,8 @@ const routes = [
       http.get('users/me').then(() => {
         next('/');
       }).catch(() => {
-          localStorage.clear()
-          next();
+        localStorage.clear()
+        next();
       })
     }
   }

@@ -14,7 +14,7 @@ def save(model: db.Model) -> db.Model:
 
 
 def delete(model: db.Model) -> db.Model:
-    db.Query.delete()
+    _session.delete(model)
     commit()
     return model
 

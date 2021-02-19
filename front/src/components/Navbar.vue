@@ -1,17 +1,12 @@
 <template>
     <div class="navbar-comp">
-        <div id="nav">
-            <!-- Direciona a rota da pagina -->
-            <router-link to="/login">Login</router-link> |
-            <router-link to="/register">Register</router-link>
-        </div>
+      <div id="nav">
+          <!-- Direciona a rota da pagina -->
+          <router-link to="/login">Login</router-link> |
+          <router-link to="/register">Register</router-link>
+      </div>
     </div>
 </template>
-
-<script>
-export default {
-}
-</script>
 
 <style scoped>
 .navbar-comp{

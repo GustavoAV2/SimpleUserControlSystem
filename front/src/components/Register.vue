@@ -26,8 +26,8 @@
 </template>
 
 <script>
-import User from '../services/users'
-import alertMixin from '../services/alertMixin'
+import User from '@/services/users'
+import alertMixin from '@/mixins/alertMixin'
 
 export default {
     mixins:[alertMixin],
@@ -37,7 +37,6 @@ export default {
             confirm_password: null,
             loading: false,
             user:{
-                name: null,
                 email: null,
                 password: null
             }
@@ -48,9 +47,9 @@ export default {
         save(){
             if (this.confirm_password == this.user.password){
                 User.create(this.user).then(() => {
-                    this.user.name = null
                     this.user.email = null
                     this.user.password = null
+                    this.confirm_password = null
                     this.generateMessage("Registered successfully!", "alert alert-success")
                 }).
                 catch(() =>{

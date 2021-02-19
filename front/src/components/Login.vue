@@ -25,8 +25,8 @@
 </template>
 
 <script>
-import User from '../services/users'
-import alertMixin from '../services/alertMixin'
+import User from '@/services/users'
+import alertMixin from '@/mixins/alertMixin'
 
 export default {
     mixins:[alertMixin],

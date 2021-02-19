@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import Navbar from '../components/Navbar'
-import Login from '../components/Login'
+import Navbar from '@/components/Navbar'
+import Login from '@/components/Login'
 
 export default {
     components:{Login, Navbar}

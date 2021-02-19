@@ -1,5 +1,5 @@
 from app.models.users import User
-from database.repository import save, commit
+from database.repository import save, delete, commit
 from app.exceptions import LoginError
 from werkzeug.security import generate_password_hash
 from typing import Dict, List
@@ -19,7 +19,7 @@ def login(data: Dict) -> Dict:
 
         access_token = create_access_token(identity=user.id, expires_delta=timedelta(minutes=600))
         return {'access_token': access_token}
-    except (AttributeError, KeyError):
+    except (AttributeError, KeyError, TypeError):
         raise LoginError
 
 
@@ -29,7 +29,7 @@ def create_user(data: Dict) -> User:
             email=data.get('email'),
             password=generate_password_hash(data.get('password'))
         ))
-    except (AttributeError, KeyError):
+    except (AttributeError, KeyError, TypeError):
         raise LoginError
 
 
@@ -41,6 +41,13 @@ def update_user(user_id: str, data: Dict) -> User:
     user.active = data.get('active') if list_keys.count('active') else user.active
     user.password = generate_password_hash(data.get('password')) if data.get('password') else user.password
 
+    commit()
+    return user
+
+
+def deleted_user(user_id: str) -> User:
+    user: User = get_user_by_id(user_id)
+    delete(user)
     commit()
     return user
 

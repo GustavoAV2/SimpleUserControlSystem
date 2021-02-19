@@ -23,7 +23,7 @@ export default new Vuex.Store({
   actions:{
     setNewLog(context, payload){
       const log = {
-        'msg': 'User ' + payload.email + ' had his status changed to ' + payload.active, 
+        'msg': payload.msg, 
         'status': payload.active ? 'success' : 'danger',
         'index': context.getters.getLogs.length + 1
       }

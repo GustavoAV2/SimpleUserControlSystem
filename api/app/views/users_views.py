@@ -3,7 +3,7 @@ from flask_jwt_extended import (jwt_required, get_jwt_identity)
 from typing import Dict, Tuple, Any, List
 
 from app.actions.users_actions import \
-    get_user_by_id, get_users, update_user, create_user, login
+    get_user_by_id, get_users, update_user, create_user, login, deleted_user
 
 from app.models.users import User
 
@@ -50,4 +50,11 @@ def get_by_id(user_id) -> Tuple[Any, int]:
 def view_user() -> Tuple[Any, int]:
     user_id: str = get_jwt_identity()
     user: User = get_user_by_id(user_id)
+    return jsonify(user.serialize()), 200
+
+
+@app_users.route('/users/delete/<id_user>', methods=['DELETE'])
+@jwt_required
+def delete(id_user) -> Tuple[Any, int]:
+    user: User = deleted_user(id_user)
     return jsonify(user.serialize()), 200
