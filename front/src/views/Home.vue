@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import Users from '../services/users'
+import Users from '@/services/users'
 import { mapMutations, mapGetters, mapActions } from 'vuex'
 import alertMixin from '@/services/alertMixin'
 
