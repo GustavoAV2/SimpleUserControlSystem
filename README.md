@@ -6,7 +6,7 @@ To install the dependencies, follow the command below:
 
 `pipenv install`
 
-- Run API
+### Run API
 
 Execute main.py
 
@@ -19,7 +19,7 @@ To install the dependencies, follow the command below:
 
 npm install
 
-- Run Front
+### Run Front
 
 Compiles and hot-reloads for development
 
