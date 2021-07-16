@@ -17,10 +17,10 @@ Execute main.py
 
 To install the dependencies, follow the command below:
 
-npm install
+`npm install`
 
 ### Run Front
 
 Compiles and hot-reloads for development
 
-npm run serve
+`npm run serve`
